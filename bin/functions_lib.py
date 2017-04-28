@@ -122,5 +122,4 @@ def clean_up_dir(mime_attachment_directory):
 
 
 if __name__ == "__main__":
-   clean_up_dir("/tmp/aa")
    print "Hello World!"
