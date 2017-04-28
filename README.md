@@ -17,7 +17,8 @@ Following are the proposed domains for using the tool:
 Scripts:
 
 The following script are included in the package, please check regularly for updates:
-1.      trt_yalda_mime_attachment_data_miner.py
+
+trt_yalda_mime_attachment_data_miner.py
 
 How to run the tools
 
