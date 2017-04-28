@@ -27,8 +27,6 @@ if clean_up_mime_directory:
 #get json data of the given files
 attachment_files = json_parser.extract_files_given_dir(data_dir, mime_attachment_directory)
 
-print attachment_files
-#mime_attachments = mime_analyzer.get_mime_message(json_data)
 
 #print mime_attachments
 mime_analyzer.analyze_mime_downloaded_files(attachment_files)
