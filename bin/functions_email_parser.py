@@ -298,7 +298,4 @@ def extract_attachment(payload, mime_attachment_directory):
         return attachment_lst
 if __name__ == "__main__":
    print "Hi there!"
-   downloaded_file = "/work/sba_smtp_files/35128747.sample"
-   file_type = "Rich Text Format data", 
-   aa = get_domain_lst(downloaded_file, file_type)
-   print aa
+  
