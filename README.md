@@ -6,9 +6,9 @@ Following are the proposed domains for using the tool:
 
 -> File Scanner for detecting if a file is malicious or suspicious.
 
--> Tool to obtain categorized hashes based on malware types.
+-> Tool to obtain categorized data based on file format.
 
--> Base tool in any research that requires the most recent malicious data with no false positive.
+-> Base tool in any research that requires categorized information on the given file.
 
 -> Testing tool to analyze detection ratio of malicious data in a product.
 
