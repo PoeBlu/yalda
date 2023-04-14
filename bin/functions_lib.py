@@ -17,7 +17,7 @@ import zipfile
 import shutil
 
 def format_date_pack():
-    lastHourDateTime = datetime.today() - timedelta(minutes = 1)
+    lastHourDateTime = datetime.now() - timedelta(minutes = 1)
     return lastHourDateTime.strftime('%Y%m%dT%H%M')
 
 def import_from(name):
@@ -30,8 +30,7 @@ def import_from(name):
 
 def command(command_string):
     stdout = os.popen (command_string)
-    result = stdout.read()
-    return result
+    return stdout.read()
 
 def get_md5sum(file_path):
     hash_lib = None
@@ -45,15 +44,11 @@ def remove_file(file_path):
 
 
 def boolian_file_exist(file_name):
-    file_exists = os.path.isfile(file_name)
-    if  file_exists:
-       return True
-    return False
+    return bool(file_exists := os.path.isfile(file_name))
 
 def get_today():
     i = datetime.now()
-    date = ("%s-%02d-%02d" % (i.year, i.month, i.day))
-    return date
+    return ("%s-%02d-%02d" % (i.year, i.month, i.day))
 
 def get_embedded_objects_run_foremost(attachment_files):
     today = get_today()
@@ -67,11 +62,11 @@ def get_embedded_objects_run_foremost(attachment_files):
         #command("foremost -i "+filepath+" -o "+output_dir +"  &> /dev/null")
         file_lst =  walktree(output_dir)
         for extracted_file in file_lst:
-                if extracted_file == "audit.txt":
-                   continue
-                extracted_file_path = output_dir+"/"+extracted_file
-                if extracted_file_path not in extracted_files_lst:
-                   extracted_files_lst.append(extracted_file_path)
+            if extracted_file == "audit.txt":
+               continue
+            extracted_file_path = f"{output_dir}/{extracted_file}"
+            if extracted_file_path not in extracted_files_lst:
+               extracted_files_lst.append(extracted_file_path)
     return extracted_files_lst         
 
 
@@ -79,7 +74,7 @@ def get_random():
     from random import choice
     from string import ascii_uppercase
 
-    return (''.join(choice(ascii_uppercase) for i in range(12)))
+    return ''.join(choice(ascii_uppercase) for _ in range(12))
 
 
 def walktree(top, file_lst=[]):
@@ -109,8 +104,15 @@ def extract_zip(my_dir, my_zip):
 
 def get_iso_date_in_microseconds():
     i = datetime.now()
-    date = ("%04d-%02d-%02dT%02d:%02d:%02d.%d" % (i.year, i.month, i.day, i.hour, i.minute, i.second, i.microsecond) )
-    return  date
+    return "%04d-%02d-%02dT%02d:%02d:%02d.%d" % (
+        i.year,
+        i.month,
+        i.day,
+        i.hour,
+        i.minute,
+        i.second,
+        i.microsecond,
+    )
 
 def get_size(filename):
     st = os.stat(filename)

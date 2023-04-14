@@ -29,58 +29,57 @@ def extract_files_given_dir(data_dir, mime_attachment_directory):
     if not  os.path.exists(mime_attachment_directory):
        os.mkdir(mime_attachment_directory)
     for root, dirs, files in os.walk(data_dir):
-       for file_name in files:
-           file_path = root+"/"+file_name
-           file_type = magic.from_file(file_path)
-           if re.search("gzip compressed data", file_type):
-              extracted_file_name = file_name.strip(".gz")
-              extracted_file_path = root+"/"+extracted_file_name
-              if os.path.isdir(extracted_file_path):
-                 shutil.rmtree(extracted_file_path)
-              if os.stat(extracted_file_path):
-                 os.remove(extracted_file_path)
-              #uncompress the file
-              command("gunzip "+file_path)
-              file_path = os.path.basename(file_path).strip(".gz")
-              directory = root+"/"+file_path
-              try:
-                with open(directory) as f:
-                       for line in f:
-                           json_load = json.loads(line)
-                           '''download attachments in the base64 mime''' 
-                           get_mime_message(json_load, file_path)
-              except:
-                 continue
-
-           elif re.search("Zip archive data", file_type):
-              try:
-                 extract_zip(mime_attachment_directory, file_path)
-              except:
-                 continue
-           elif re.search('ASCII mail text', file_type):
-               try:
-                   get_attachments_mail_text(file_path, mime_attachment_directory)
-               except:
+        for file_name in files:
+            file_path = f"{root}/{file_name}"
+            file_type = magic.from_file(file_path)
+            if re.search("gzip compressed data", file_type):
+                extracted_file_name = file_name.strip(".gz")
+                extracted_file_path = f"{root}/{extracted_file_name}"
+                if os.path.isdir(extracted_file_path):
+                   shutil.rmtree(extracted_file_path)
+                if os.stat(extracted_file_path):
+                   os.remove(extracted_file_path)
+                              #uncompress the file
+                command(f"gunzip {file_path}")
+                file_path = os.path.basename(file_path).strip(".gz")
+                directory = f"{root}/{file_path}"
+                try:
+                  with open(directory) as f:
+                         for line in f:
+                             json_load = json.loads(line)
+                             '''download attachments in the base64 mime''' 
+                             get_mime_message(json_load, file_path)
+                except:
                    continue
-           elif re.search("ASCII English text", file_type):
-               flag = 0 
+
+            elif re.search("Zip archive data", file_type):
                try:
-                with open(file_path) as f:
-                  for line in f:
-                       json_load = json.loads(line)
-                       #download attachments in the base64 mime 
-                       file_name = os.path.basename(file_path)
-                       get_mime_message(json_load, file_name)
-                       flag = 1
-                  if flag ==0:
-                      file_lst.append(file_path)
+                  extract_zip(mime_attachment_directory, file_path)
                except:
                   continue
-           else:
-               file_lst.append(file_path)
+            elif re.search('ASCII mail text', file_type):
+                try:
+                    get_attachments_mail_text(file_path, mime_attachment_directory)
+                except:
+                    continue
+            elif re.search("ASCII English text", file_type):
+                flag = 0 
+                try:
+                 with open(file_path) as f:
+                   for line in f:
+                        json_load = json.loads(line)
+                        #download attachments in the base64 mime 
+                        file_name = os.path.basename(file_path)
+                        get_mime_message(json_load, file_name)
+                        flag = 1
+                   if flag ==0:
+                       file_lst.append(file_path)
+                except:
+                   continue
+            else:
+                file_lst.append(file_path)
     dir_lst = walktree(mime_attachment_directory)
-    attachments_lst = dir_lst+file_lst
-    return attachments_lst           
+    return dir_lst+file_lst           
 
 
 if __name__ == "__main__":

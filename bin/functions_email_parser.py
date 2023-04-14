@@ -94,31 +94,31 @@ def analyze_mime_downloaded_files(file_lst):
     count = 0
     for downloaded_file in file_lst:
             
-            file_type_magic = magic.from_file(downloaded_file)
-            file_type = downloaded_file.split(".")[-1]
-            md5_hash = get_md5sum(downloaded_file)
-            size = get_size(downloaded_file)
-            base_dir = os.path.dirname(downloaded_file)
-            if file_type == "zip":
-               new_name = downloaded_file.strip(".zip")
-               zip_dir =new_name+str(count)
-               if os.path.exists(zip_dir):
-                  continue
-               try:
-                 os.mkdir(zip_dir)
-                 extracted_files = extract_zip(downloaded_file, zip_dir)
-                 count+=1
-                 for zip_file in extracted_files:
-                   zip_file =  zip_dir+"/"+zip_file
-                   md5sum = get_md5sum(zip_file)
-                   extracted_file_type = magic.from_file(zip_file)
-                   domain_lst = get_domain_lst(zip_file, extracted_file_type)
-                   insert_data_in_database(domain_lst, zip_file, md5sum, file_type, size) 
-               except:
-                  continue
-            else:
-               domain_lst = get_domain_lst(downloaded_file, file_type_magic)
-               insert_data_in_database(domain_lst, downloaded_file, md5_hash, file_type_magic, size) 
+        file_type_magic = magic.from_file(downloaded_file)
+        file_type = downloaded_file.split(".")[-1]
+        md5_hash = get_md5sum(downloaded_file)
+        size = get_size(downloaded_file)
+        base_dir = os.path.dirname(downloaded_file)
+        if file_type == "zip":
+            new_name = downloaded_file.strip(".zip")
+            zip_dir =new_name+str(count)
+            if os.path.exists(zip_dir):
+               continue
+            try:
+                os.mkdir(zip_dir)
+                extracted_files = extract_zip(downloaded_file, zip_dir)
+                count+=1
+                for zip_file in extracted_files:
+                    zip_file = f"{zip_dir}/{zip_file}"
+                    md5sum = get_md5sum(zip_file)
+                    extracted_file_type = magic.from_file(zip_file)
+                    domain_lst = get_domain_lst(zip_file, extracted_file_type)
+                    insert_data_in_database(domain_lst, zip_file, md5sum, file_type, size)
+            except:
+               continue
+        else:
+            domain_lst = get_domain_lst(downloaded_file, file_type_magic)
+            insert_data_in_database(domain_lst, downloaded_file, md5_hash, file_type_magic, size) 
 
 
 def get_domain_lst(downloaded_file, file_type):
@@ -151,7 +151,6 @@ def get_domain_lst(downloaded_file, file_type):
 
 def get_short_url(url):
     """Return top two domain levels from URI"""
-    format_lst = ["exe", "php", "html", "gif"]
     re_3986_enhanced = re.compile(r"""
         # Parse and capture RFC-3986 Generic URI components.
         ^                                    # anchor to beginning of string
@@ -164,36 +163,31 @@ def get_short_url(url):
         """, re.MULTILINE | re.VERBOSE)
     result = ""
     m_uri = re_3986_enhanced.match(url)
-    if m_uri and m_uri.group("authority"):
-        auth = m_uri.group("authority")
-        paths = m_uri.group("path")
+    if m_uri and m_uri["authority"]:
+        auth = m_uri["authority"]
+        paths = m_uri["path"]
         path = paths.split("/")
         path = filter(lambda s: len(s) > 0, path)
         path_length = len(path)
         count = 1
         url_path = ""
         if path_length> 1:
-           object_path1 = path[1].split(".")
-           flag = 0
-           for i in object_path1:
-              if i in format_lst:
-                 flag = 1
-           if flag ==1:
-              url_path = path[0]
-           else:
-              url_path = path[0]+"/"+path[1]
-
-        scheme = m_uri.group("scheme")
-        result = auth+"/"+url_path
+            object_path1 = path[1].split(".")
+            flag = 0
+            format_lst = ["exe", "php", "html", "gif"]
+            for i in object_path1:
+               if i in format_lst:
+                  flag = 1
+            url_path = path[0] if flag ==1 else f"{path[0]}/{path[1]}"
+        scheme = m_uri["scheme"]
+        result = f"{auth}/{url_path}"
     return result
 
 
 def parse_wsf_file(zip_file):
     domain_lst=[]
-    txt = open(zip_file, "r")
-    lines = txt.readlines()
-    txt.close()
-
+    with open(zip_file, "r") as txt:
+        lines = txt.readlines()
     for line in lines:
         if not re.search("Array", line):
            continue
